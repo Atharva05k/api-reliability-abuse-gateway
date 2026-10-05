@@ -1,10 +1,11 @@
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, Security, status
 from sqlalchemy.orm import Session
 
 from app.schemas import GatewayRequest, GatewayResponse
 from app.database import get_db
 from app.services import create_request_record, get_request_by_id
 from app.processors import process_request
+from app.auth import verify_api_key
 
 
 
@@ -24,7 +25,8 @@ def home():
 @app.post(
     "/requests",
     response_model=GatewayResponse,
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Security(verify_api_key)]
 )
 
 def create_request(
@@ -54,8 +56,10 @@ def create_request(
 
 @app.get(
     "/requests/{request_id}",
-    response_model=GatewayResponse
+    response_model=GatewayResponse,
+    dependencies=[Security(verify_api_key)]
 )
+
 def get_request(
     request_id: str,
     db: Session = Depends(get_db)
