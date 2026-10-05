@@ -8,12 +8,14 @@ from app.schemas import GatewayRequest
 
 def create_request_record(
     db: Session,
-    request: GatewayRequest
+    request: GatewayRequest,
+    idempotency_key: str
 ) -> GatewayRequestModel:
 
     request_record = GatewayRequestModel(
         request_id=str(uuid4()),
         client_id=request.client_id,
+        idempotency_key=idempotency_key,
         request_type=request.request_type.value,
         priority=request.priority.value,
         payload=request.payload,
@@ -36,6 +38,21 @@ def get_request_by_id(
         db.query(GatewayRequestModel)
         .filter(
             GatewayRequestModel.request_id == request_id
+        )
+        .first()
+    )
+
+def get_request_by_idempotency_key(
+    db: Session,
+    client_id: str,
+    idempotency_key: str
+) -> GatewayRequestModel | None:
+
+    return (
+        db.query(GatewayRequestModel)
+        .filter(
+            GatewayRequestModel.client_id == client_id,
+            GatewayRequestModel.idempotency_key == idempotency_key
         )
         .first()
     )

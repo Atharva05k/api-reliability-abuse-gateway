@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, JSON, String
+from sqlalchemy import Column, DateTime, Integer, JSON, String, UniqueConstraint
 from sqlalchemy.sql import func
 
 from app.database import Base
@@ -7,6 +7,13 @@ from app.database import Base
 class GatewayRequestModel(Base):
 
     __tablename__ = "gateway_requests"
+    __table_args__ = (
+        UniqueConstraint(
+            "client_id",
+            "idempotency_key",
+            name="uq_client_idempotency_key"
+        ),
+    )
 
     id = Column(
         Integer,
@@ -23,6 +30,12 @@ class GatewayRequestModel(Base):
 
     client_id = Column(
         String(50),
+        nullable=False,
+        index=True
+    )
+
+    idempotency_key = Column(
+        String(100),
         nullable=False,
         index=True
     )
