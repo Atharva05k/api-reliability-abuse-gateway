@@ -1,13 +1,10 @@
-from datetime import datetime, timezone
-from uuid import uuid4
-
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.schemas import GatewayRequest, GatewayResponse
 from app.database import get_db
-from app.models import GatewayRequestModel
-
+from app.services import create_request_record, get_request_by_id
+from app.processors import process_request
 
 
 
@@ -35,25 +32,20 @@ def create_request(
     db: Session = Depends(get_db)
 ):
 
-    request_id = str(uuid4())
-
-    request_record = GatewayRequestModel(
-        request_id=request_id,
-        client_id=request.client_id,
-        request_type=request.request_type.value,
-        priority=request.priority.value,
-        payload=request.payload,
-        status="RECEIVED"
+    request_record = create_request_record(
+        db,
+        request
     )
 
-    db.add(request_record)
-    db.commit()
-    db.refresh(request_record)
+    processing_message = process_request(
+        request.request_type,
+        request.payload
+    )
 
     return GatewayResponse(
         request_id=request_record.request_id,
         status=request_record.status,
-        message="Request received successfully",
+        message=processing_message,
         client_id=request_record.client_id,
         request_type=request_record.request_type,
         priority=request_record.priority,
@@ -69,12 +61,9 @@ def get_request(
     db: Session = Depends(get_db)
 ):
 
-    request_record = (
-        db.query(GatewayRequestModel)
-        .filter(
-            GatewayRequestModel.request_id == request_id
-        )
-        .first()
+    request_record = get_request_by_id(
+        db,
+        request_id
     )
 
     if request_record is None:
@@ -92,3 +81,4 @@ def get_request(
         priority=request_record.priority,
         received_at=request_record.created_at
     )
+
