@@ -18,6 +18,7 @@ from app.services import (
 )
 from app.processors import process_request
 from app.auth import verify_api_key
+from app.risk import calculate_risk_level
 
 
 
@@ -86,13 +87,26 @@ def create_request(
             client_id=existing_request.client_id,
             request_type=existing_request.request_type,
             priority=existing_request.priority,
+            risk_level=existing_request.priority,
             received_at=existing_request.created_at
+        )
+
+    risk_level = calculate_risk_level(
+        db,
+        request.client_id
+    )
+
+    if risk_level == "HIGH":
+        raise HTTPException(
+            status_code=429,
+            detail="Too many requests from this client. Please try again later."
         )
 
     request_record = create_request_record(
         db,
         request,
-        idempotency_key
+        idempotency_key,
+        risk_level
     )
 
     processing_message = process_request(
@@ -107,6 +121,7 @@ def create_request(
         client_id=request_record.client_id,
         request_type=request_record.request_type,
         priority=request_record.priority,
+        risk_level=request_record.risk_level,
         received_at=request_record.created_at
     )
 
@@ -139,6 +154,7 @@ def get_request(
         client_id=request_record.client_id,
         request_type=request_record.request_type,
         priority=request_record.priority,
+        risk_level=request_record.risk_level,
         received_at=request_record.created_at
     )
 

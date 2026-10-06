@@ -9,7 +9,8 @@ from app.schemas import GatewayRequest
 def create_request_record(
     db: Session,
     request: GatewayRequest,
-    idempotency_key: str
+    idempotency_key: str,
+    risk_level: str
 ) -> GatewayRequestModel:
 
     request_record = GatewayRequestModel(
@@ -18,6 +19,7 @@ def create_request_record(
         idempotency_key=idempotency_key,
         request_type=request.request_type.value,
         priority=request.priority.value,
+        risk_level=risk_level,
         payload=request.payload,
         status="RECEIVED"
     )

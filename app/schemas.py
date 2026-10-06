@@ -38,4 +38,5 @@ class GatewayResponse(BaseModel):
     client_id: str
     request_type: RequestType
     priority: Priority
+    risk_level: str
     received_at: datetime

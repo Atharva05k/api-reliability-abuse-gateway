@@ -50,6 +50,12 @@ class GatewayRequestModel(Base):
         nullable=False
     )
 
+    risk_level = Column(
+        String(20),
+        nullable=False,
+        default="LOW"
+    )
+
     payload = Column(
         JSON,
         nullable=False
