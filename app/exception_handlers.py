@@ -41,3 +41,20 @@ def register_exception_handlers(app: FastAPI) -> None:
                 }
             },
         )
+
+    @app.exception_handler(Exception)
+    async def unexpected_exception_handler(
+        request: Request,
+        exc: Exception,
+    ):
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": {
+                    "type": "internal_server_error",
+                    "status_code": 500,
+                    "message": "An unexpected server error occurred",
+                    "path": request.url.path,
+                }
+            },
+        )

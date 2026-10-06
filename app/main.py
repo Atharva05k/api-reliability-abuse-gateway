@@ -4,7 +4,8 @@ from fastapi import (
     Header, 
     HTTPException,
     Response, 
-    Security, 
+    Security,
+    Request, 
     status
 )
 from sqlalchemy.orm import Session
@@ -20,7 +21,9 @@ from app.processors import process_request
 from app.auth import verify_api_key
 from app.risk import calculate_risk_level
 from app.exception_handlers import register_exception_handlers
+from app.logging_config import configure_logging, logger
 
+import time
 
 
 app = FastAPI(
@@ -28,7 +31,10 @@ app = FastAPI(
     version="1.0.0"
 )
 
+configure_logging()
 register_exception_handlers(app)
+
+
 
 @app.get("/")
 def home():
