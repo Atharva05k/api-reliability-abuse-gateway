@@ -19,6 +19,7 @@ from app.services import (
 from app.processors import process_request
 from app.auth import verify_api_key
 from app.risk import calculate_risk_level
+from app.exception_handlers import register_exception_handlers
 
 
 
@@ -27,6 +28,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
+register_exception_handlers(app)
 
 @app.get("/")
 def home():
