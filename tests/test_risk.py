@@ -65,3 +65,58 @@ def test_burst_risk_levels_and_blocking():
     )
 
     assert seventh_response.status_code == 429
+
+def test_idempotent_retry_does_not_increase_burst_count():
+    assert API_KEY is not None, (
+        "API_KEY environment variable must be set before running tests"
+    )
+
+    unique_value = uuid.uuid4().hex[:8]
+    client_id = f"RETRY_{unique_value}"
+
+    body = {
+        "client_id": client_id,
+        "request_type": "DATA_EXPORT",
+        "priority": "NORMAL",
+        "payload": {
+            "format": "csv"
+        },
+    }
+
+    first_headers = {
+        "X-API-Key": API_KEY,
+        "X-Idempotency-Key": f"retry-{unique_value}-1",
+    }
+
+    first_response = client.post(
+        "/requests",
+        headers=first_headers,
+        json=body,
+    )
+
+    assert first_response.status_code == 201
+    assert first_response.json()["risk_level"] == "LOW"
+
+    duplicate_response = client.post(
+        "/requests",
+        headers=first_headers,
+        json=body,
+    )
+
+    assert duplicate_response.status_code == 200
+    assert (
+        duplicate_response.json()["request_id"]
+        == first_response.json()["request_id"]
+    )
+
+    second_response = client.post(
+        "/requests",
+        headers={
+            "X-API-Key": API_KEY,
+            "X-Idempotency-Key": f"retry-{unique_value}-2",
+        },
+        json=body,
+    )
+
+    assert second_response.status_code == 201
+    assert second_response.json()["risk_level"] == "LOW"
