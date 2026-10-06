@@ -22,6 +22,7 @@ from app.auth import verify_api_key
 from app.risk import calculate_risk_level
 from app.exception_handlers import register_exception_handlers
 from app.logging_config import configure_logging, logger
+from app.metrics import get_metrics_snapshot, record_request
 
 import time
 
@@ -34,7 +35,61 @@ app = FastAPI(
 configure_logging()
 register_exception_handlers(app)
 
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.perf_counter()
 
+    try:
+        response = await call_next(request)
+
+    except Exception:
+        duration_ms = round(
+            (time.perf_counter() - start_time) * 1000,
+            2,
+        )
+
+        logger.exception(
+            "request_failed",
+            extra={
+                "method": request.method,
+                "path": request.url.path,
+                "status_code": 500,
+                "duration_ms": duration_ms,
+            },
+        )
+
+        if request.url.path != "/metrics":
+            record_request(
+                method=request.method,
+                status_code=500,
+                duration_ms=duration_ms,
+            )
+
+        raise
+
+    duration_ms = round(
+        (time.perf_counter() - start_time) * 1000,
+        2,
+    )
+
+    logger.info(
+        "request_completed",
+        extra={
+            "method": request.method,
+            "path": request.url.path,
+            "status_code": response.status_code,
+            "duration_ms": duration_ms,
+        },
+    )
+    
+    if request.url.path != "/metrics":
+        record_request(
+            method=request.method,
+            status_code=response.status_code,
+            duration_ms=duration_ms,
+        )
+    
+    return response
 
 @app.get("/")
 def home():
@@ -166,3 +221,6 @@ def get_request(
         received_at=request_record.created_at
     )
 
+@app.get("/metrics")
+async def get_metrics():
+    return get_metrics_snapshot()
