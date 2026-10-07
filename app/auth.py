@@ -3,7 +3,9 @@ import secrets
 
 from fastapi import HTTPException, Security, status
 from fastapi.security import APIKeyHeader
+from dotenv import load_dotenv
 
+load_dotenv()
 
 api_key_header = APIKeyHeader(
     name="X-API-Key",
