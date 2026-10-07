@@ -1,0 +1,908 @@
+{
+	"info": {
+		"_postman_id": "3e151efc-dd03-4a38-a412-0c94cb245ef0",
+		"name": "API Reliability & Abuse Detection Gateway",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "58757397",
+		"_collection_link": "https://kushareatharva05-8980524.postman.co/workspace/4b6c673f-66ba-4bbe-8bfe-ed559518d596/collection/58757397-3e151efc-dd03-4a38-a412-0c94cb245ef0?action=share&source=collection_link&creator=58757397"
+	},
+	"item": [
+		{
+			"name": "Create Request - Success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Risk level is LOW\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.risk_level).to.eql(\"LOW\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Client ID is correct\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.client_id).to.eql(\"POSTMAN_SUCCESS_008\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Request ID is returned\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.request_id).to.exist;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Idempotency-Key",
+						"value": "postman-success-008",
+						"type": "text"
+					},
+					{
+						"key": "X-API-key",
+						"value": "YOUR_API_KEY_HERE",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"client_id\": \"POSTMAN_SUCCESS_008\",\r\n  \"request_type\": \"DATA_EXPORT\",\r\n  \"priority\": \"NORMAL\",\r\n  \"payload\": {\r\n    \"format\": \"csv\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/requests",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"requests"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Create Request - Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Idempotency-Key",
+								"value": "postman-success-007",
+								"type": "text"
+							},
+							{
+								"key": "X-API-key",
+								"value": "YOUR_API_KEY_HERE",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"client_id\": \"POSTMAN_SUCCESS_007\",\r\n  \"request_type\": \"DATA_EXPORT\",\r\n  \"priority\": \"NORMAL\",\r\n  \"payload\": {\r\n    \"format\": \"csv\"\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/requests",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"requests"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Wed, 07 Oct 2026 18:51:50 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "265"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"request_id\": \"248ea6a1-44b9-4db7-87e2-01020d7459de\",\n    \"status\": \"RECEIVED\",\n    \"message\": \"Data export request accepted\",\n    \"client_id\": \"POSTMAN_SUCCESS_007\",\n    \"request_type\": \"DATA_EXPORT\",\n    \"priority\": \"NORMAL\",\n    \"risk_level\": \"LOW\",\n    \"received_at\": \"2026-10-08T00:21:50.376962+05:30\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Missing API Key - 401",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error type is http_error\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.error.type).to.eql(\"http_error\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error status code is 401\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.error.status_code).to.eql(401);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Idempotency-Key",
+						"value": "postman-401-001",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"client_id\": \"POSTMAN_401_001\",\r\n  \"request_type\": \"DATA_EXPORT\",\r\n  \"priority\": \"NORMAL\",\r\n  \"payload\": {\r\n    \"format\": \"csv\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/requests",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"requests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Wrong API Key - 401",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error type is http_error\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.error.type).to.eql(\"http_error\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error status code is 401\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.error.status_code).to.eql(401);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-key",
+						"value": "wrong-api-key",
+						"type": "text"
+					},
+					{
+						"key": "X-Idempotency-Key",
+						"value": "postman-wrong-key-001",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"client_id\": \"POSTMAN_WRONG_KEY_001\",\r\n  \"request_type\": \"DATA_EXPORT\",\r\n  \"priority\": \"NORMAL\",\r\n  \"payload\": {\r\n    \"format\": \"csv\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/requests",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"requests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Idempotency Original - 201",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"pm.collectionVariables.set(\r",
+							"    \"idempotency_request_id\",\r",
+							"    response.request_id\r",
+							");\r",
+							"\r",
+							"pm.test(\"Request ID was returned\", function () {\r",
+							"    pm.expect(response.request_id).to.exist;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "YOUR_API_KEY_HERE",
+						"type": "text"
+					},
+					{
+						"key": "X-Idempotency-Key",
+						"value": "postman-idem-001",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"client_id\": \"POSTMAN_IDEM_001\",\r\n  \"request_type\": \"DATA_EXPORT\",\r\n  \"priority\": \"NORMAL\",\r\n  \"payload\": {\r\n    \"format\": \"csv\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/requests",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"requests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Idempotency Duplicate - 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Duplicate returns the same request ID\", function () {\r",
+							"    const originalRequestId =\r",
+							"        pm.collectionVariables.get(\"idempotency_request_id\");\r",
+							"\r",
+							"    pm.expect(response.request_id).to.eql(originalRequestId);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "YOUR_API_KEY_HERE",
+						"type": "text"
+					},
+					{
+						"key": "X-Idempotency-Key",
+						"value": "postman-idem-001",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"client_id\": \"POSTMAN_IDEM_001\",\r\n  \"request_type\": \"DATA_EXPORT\",\r\n  \"priority\": \"NORMAL\",\r\n  \"payload\": {\r\n    \"format\": \"csv\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/requests",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"requests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Idempotency Conflict - 409",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 409\", function () {\r",
+							"    pm.response.to.have.status(409);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error type is http_error\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.error.type).to.eql(\"http_error\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error status code is 409\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.error.status_code).to.eql(409);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "YOUR_API_KEY_HERE",
+						"type": "text"
+					},
+					{
+						"key": "X-Idempotency-Key",
+						"value": "postman-idem-001",
+						"type": "text"
+					},
+					{
+						"key": "Content-Key",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"client_id\": \"POSTMAN_IDEM_001\",\r\n  \"request_type\": \"DATA_EXPORT\",\r\n  \"priority\": \"HIGH\",\r\n  \"payload\": {\r\n    \"format\": \"csv\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/requests",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"requests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Validation Error - 422",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 422\", function () {\r",
+							"    pm.response.to.have.status(422);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error type is validation_error\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.error.type).to.eql(\"validation_error\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error status code is 422\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.error.status_code).to.eql(422);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "YOUR_API_KEY_HERE",
+						"type": "text"
+					},
+					{
+						"key": "X-Idempotency-Key",
+						"value": "postman-validation-001",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"client_id\": \"POSTMAN_VAL_001\",\r\n  \"request_type\": \"DATA_EXPORT\",\r\n  \"priority\": \"INVALID_PRIORITY\",\r\n  \"payload\": {\r\n    \"format\": \"csv\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/requests",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"requests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request Not Found - 404",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error type is http_error\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.error.type).to.eql(\"http_error\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error status code is 404\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.error.status_code).to.eql(404);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-Key",
+						"value": "YOUR_API_KEY_HERE",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/requests/postman-does-not-exist-001",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"requests",
+						"postman-does-not-exist-001"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Burst Test - 429",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 429\", function () {\r",
+							"    pm.response.to.have.status(429);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error type is http_error\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.error.type).to.eql(\"http_error\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Error status code is 429\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.error.status_code).to.eql(429);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Idempotency-Key",
+						"value": "burst2-007",
+						"type": "text"
+					},
+					{
+						"key": "X-API-key",
+						"value": "YOUR_API_KEY_HERE",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"client_id\": \"POSTMAN_BURST_TEST_02\",\r\n  \"request_type\": \"DATA_EXPORT\",\r\n  \"priority\": \"NORMAL\",\r\n  \"payload\": {\r\n    \"format\": \"csv\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/requests",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"requests"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Create Request - Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Idempotency-Key",
+								"value": "postman-success-007",
+								"type": "text"
+							},
+							{
+								"key": "X-API-key",
+								"value": "YOUR_API_KEY_HERE",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"client_id\": \"POSTMAN_SUCCESS_007\",\r\n  \"request_type\": \"DATA_EXPORT\",\r\n  \"priority\": \"NORMAL\",\r\n  \"payload\": {\r\n    \"format\": \"csv\"\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/requests",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"requests"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "date",
+							"value": "Wed, 07 Oct 2026 18:51:50 GMT"
+						},
+						{
+							"key": "server",
+							"value": "uvicorn"
+						},
+						{
+							"key": "content-length",
+							"value": "265"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"request_id\": \"248ea6a1-44b9-4db7-87e2-01020d7459de\",\n    \"status\": \"RECEIVED\",\n    \"message\": \"Data export request accepted\",\n    \"client_id\": \"POSTMAN_SUCCESS_007\",\n    \"request_type\": \"DATA_EXPORT\",\n    \"priority\": \"NORMAL\",\n    \"risk_level\": \"LOW\",\n    \"received_at\": \"2026-10-08T00:21:50.376962+05:30\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Metrics - 200",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Metrics contain total_requests\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response).to.have.property(\"total_requests\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Metrics contain requests_by_method\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response).to.have.property(\"requests_by_method\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Metrics contain responses_by_status\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response).to.have.property(\"responses_by_status\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Metrics contain average_duration_ms\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response).to.have.property(\"average_duration_ms\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/metrics",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"metrics"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{api_key}}\n",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "X-API-Key",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000",
+			"type": "string"
+		},
+		{
+			"key": "api_key",
+			"value": "YOUR_API_KEY_HERE",
+			"type": "string"
+		},
+		{
+			"key": "gatewat_api_key",
+			"value": "YOUR_API_KEY_HERE",
+			"type": "string"
+		},
+		{
+			"key": "idempotency_request_id",
+			"value": ""
+		}
+	]
+}
